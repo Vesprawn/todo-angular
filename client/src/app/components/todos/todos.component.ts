@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Todo } from './todos.model';
 import { FormsModule } from '@angular/forms';
+import { TodoService } from './todo.service';
 
 @Component({
   selector: 'app-todos',
@@ -12,37 +13,28 @@ import { FormsModule } from '@angular/forms';
 export class TodosComponent {
   inputTodo: string = ''
 
-  todos: Todo[] = [
-    {
-      content: 'First todo',
-      completed: false,
-      id: 0
-    },
-    {
-      content: 'Second todo',
-      completed: true,
-      id: 1
-    }
-  ];
+  todos: Todo[] = this.todoService.getTodos();
+
+  constructor (private todoService: TodoService) {}
 
   toggleDone (id: number) {
-    this.todos = this.todos.map(a => ({...a, completed: (a.id === id) ? !a.completed : a.completed}))
+    this.todoService.toggleDone(id);
+    this.todos = this.todoService.getTodos();
   }
 
   deleteTodo (id: number) {
-    this.todos = this.todos.filter(a => a.id !== id)
+    this.todoService.deleteTodo(id);
+    this.todos = this.todoService.getTodos();
   }
 
   addTodo () {
-    this.todos = [
-      ...this.todos,
-      {
-        id: new Date().getTime(),
-        content: this.inputTodo,
-        completed: false
-      }
-    ]
+    this.todoService.addTodo({
+      id: new Date().getTime(),
+      content: this.inputTodo,
+      completed: false
+    });
 
-    this.inputTodo = ''
+    this.inputTodo = '';
+    this.todos = this.todoService.getTodos();
   }
 }
